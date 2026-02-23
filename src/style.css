@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Primary Scale */
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+
+  /* Contextual Colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  /* Backgrounds & Surfaces */
+  --color-bg-main: #F9FAFB;
+  --color-surface: #FFFFFF;
+  --color-border-subtle: #E5E7EB;
+
+  /* Text */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+
+  /* Dark Mode tokens */
+  --color-dark-bg: #0F172A;
+  --color-dark-surface: #1E293B;
+  --color-text-light: #E2E8F0;
+
+  /* Radius */
+  --radius-custom: 8px;
+}
+
+/* ── Base resets ────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-main);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography Scale (using rem for scaling) ──────────────── */
+h1,
+.text-app-title {
+  font-size: 1.625rem;
+  /* ~26px */
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h2,
+.text-section-heading {
+  font-size: 1.1875rem;
+  /* ~19px */
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h3,
+.text-task-title {
+  font-size: 1rem;
+  /* ~16px */
+  font-weight: 500;
+}
+
+.text-body {
+  font-size: 0.9375rem;
+  /* ~15px */
+  font-weight: 400;
+}
+
+.text-metadata {
+  font-size: 0.78125rem;
+  /* ~12.5px */
+  font-weight: 400;
+}
+
+/* ── High Contrast Mode ────────────────────────────── */
+.high-contrast {
+  --color-primary: #0000FF !important;
+  --color-bg-main: #FFFFFF !important;
+  --color-surface: #FFFFFF !important;
+  --color-text-primary: #000000 !important;
+  --color-text-secondary: #000000 !important;
+  --color-border-subtle: #000000 !important;
+  --color-success: #008800 !important;
+  --color-danger: #AA0000 !important;
+}
+
+.dark.high-contrast {
+  --color-dark-bg: #000000 !important;
+  --color-dark-surface: #000000 !important;
+  --color-text-light: #FFFFFF !important;
+  --color-border-subtle: #FFFFFF !important;
+  --color-primary: #FFFF00 !important;
+}
+
+.high-contrast * {
+  border-width: 2px !important;
+  outline-color: var(--color-primary) !important;
+}
+
+/* ── Dark-mode base overrides ───────────────────────── */
+.dark body {
+  background-color: var(--color-dark-bg);
+  color: var(--color-text-light);
+}
+
+/* Global Transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: 200ms;
+}
