@@ -1,8 +1,21 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 
+// Simple helper for "encryption" (Base64 + salt) for demonstration as per plan
+const ENCRYPTION_KEY = 'task-buddy-secure-key'
+const encrypt = (data) => btoa(JSON.stringify(data) + ENCRYPTION_KEY)
+const decrypt = (cipher) => {
+    try {
+        const decoded = atob(cipher)
+        return JSON.parse(decoded.replace(ENCRYPTION_KEY, ''))
+    } catch {
+        return null
+    }
+}
+
 export const useTasksStore = defineStore('tasks', () => {
-    const tasks = ref([
+    const savedTasks = localStorage.getItem('task-buddy-tasks')
+    const initialTasks = savedTasks ? decrypt(savedTasks) : [
         {
             id: 1,
             title: 'Design the landing page wireframe',
@@ -26,24 +39,15 @@ export const useTasksStore = defineStore('tasks', () => {
             priority: 'medium',
             dueDate: '2026-02-22',
             status: 'todo',
-        },
-        {
-            id: 4,
-            title: 'Refactor API error handling',
-            description: 'Centralise error interceptors and add user-friendly toast notifications.',
-            priority: 'low',
-            dueDate: '2026-02-25',
-            status: 'todo',
-        },
-        {
-            id: 5,
-            title: 'Create user onboarding flow',
-            description: 'Build a 3-step onboarding wizard with progress indicator and skip option.',
-            priority: 'medium',
-            dueDate: '2026-02-19',
-            status: 'inprogress',
-        },
-    ])
+        }
+    ]
+
+    const tasks = ref(initialTasks || [])
+
+    // Persist and Encrypt whenever tasks change
+    watch(tasks, (newTasks) => {
+        localStorage.setItem('task-buddy-tasks', encrypt(newTasks))
+    }, { deep: true })
 
     function updateStatus(id, newStatus) {
         const task = tasks.value.find((t) => t.id === id)

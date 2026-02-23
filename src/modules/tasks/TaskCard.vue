@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from '../../composables/useI18n'
 
+const { t } = useI18n()
 const props = defineProps({
   task: {
     type: Object,
@@ -12,17 +14,14 @@ const emit = defineEmits(['status-change', 'share', 'delete'])
 
 const priorityConfig = {
   low: {
-    label: 'Low',
     classes: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20',
     accent: 'bg-emerald-500'
   },
   medium: {
-    label: 'Medium',
     classes: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20',
     accent: 'bg-amber-500'
   },
   high: {
-    label: 'High',
     classes: 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/20',
     accent: 'bg-rose-500'
   },
@@ -55,7 +54,7 @@ function onStatusChange(event) {
           class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-widest transition-colors"
           :class="priorityConfig[task.priority].classes"
         >
-          {{ task.priority }}
+          {{ t(task.priority) }}
         </span>
 
         <button
@@ -105,9 +104,9 @@ function onStatusChange(event) {
                  focus:border-primary focus:ring-1 focus:ring-primary/20
                  outline-none transition cursor-pointer"
         >
-          <option value="todo">To Do</option>
-          <option value="inprogress">In Progress</option>
-          <option value="done">Done</option>
+          <option value="todo">{{ t('todo') }}</option>
+          <option value="inprogress">{{ t('inprogress') }}</option>
+          <option value="done">{{ t('done') }}</option>
         </select>
       </div>
     </div>

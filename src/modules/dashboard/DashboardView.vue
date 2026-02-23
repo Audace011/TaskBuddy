@@ -139,7 +139,7 @@ function logout() {
       <div class="mb-8 flex items-baseline justify-between">
         <div>
           <h1 class="text-app-title text-text-primary dark:text-text-light">{{ t('dashboard') }}</h1>
-          <p class="mt-1 text-sm text-text-secondary dark:text-slate-400">Manage your tasks and stay productive.</p>
+          <p class="mt-1 text-sm text-text-secondary dark:text-slate-400">{{ t('dashboardSub') }}</p>
         </div>
       </div>
 

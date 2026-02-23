@@ -2,8 +2,10 @@
 import { ref } from 'vue'
 import { useAuthStore } from './AuthStore'
 import { useRouter } from 'vue-router'
+import { useI18n } from '../../composables/useI18n'
 import DarkModeToggle from '../../components/ui/DarkModeToggle.vue'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -38,9 +40,9 @@ function handleLogin() {
 
       <!-- Hero Text -->
       <div class="mb-10">
-        <h2 class="text-app-title text-text-primary dark:text-text-light">Good to see you.</h2>
+        <h2 class="text-app-title text-text-primary dark:text-text-light">{{ t('goodToSeeYou') }}</h2>
         <p class="mt-2 text-sm text-text-secondary dark:text-slate-400">
-          Sign in to pick up where you left off.
+          {{ t('signInHero') }}
         </p>
       </div>
 
@@ -48,7 +50,7 @@ function handleLogin() {
       <form @submit.prevent="handleLogin" class="space-y-6">
         <div>
           <label for="name" class="mb-2 block text-metadata font-semibold uppercase tracking-wider text-text-secondary">
-            Full Name
+            {{ t('fullName') }}
           </label>
           <input
             id="name"
@@ -63,7 +65,7 @@ function handleLogin() {
 
         <div>
           <label for="email" class="mb-2 block text-metadata font-semibold uppercase tracking-wider text-text-secondary">
-            Email Address
+            {{ t('emailAddress') }}
           </label>
           <input
             id="email"
@@ -80,9 +82,9 @@ function handleLogin() {
         <div>
           <div class="flex items-center justify-between mb-2">
             <label for="password" class="block text-metadata font-semibold uppercase tracking-wider text-text-secondary">
-              Password
+              {{ t('password') }}
             </label>
-            <a href="#" class="text-metadata font-bold text-primary hover:underline">Forgot?</a>
+            <a href="#" class="text-metadata font-bold text-primary hover:underline">{{ t('forgot') }}</a>
           </div>
           <input
             id="password"
@@ -101,15 +103,15 @@ function handleLogin() {
           class="w-full rounded-custom bg-primary px-6 py-3.5 text-sm font-semibold text-white
                  shadow-sm hover:bg-primary-hover transition-all active:scale-[0.98]"
         >
-          Sign In
+          {{ t('signIn') }}
         </button>
       </form>
 
       <!-- Footer -->
       <div class="mt-10 pt-8 border-t border-border-subtle dark:border-slate-800">
         <p class="text-center text-xs font-medium text-text-secondary dark:text-slate-400">
-          New here? 
-          <a href="#" class="font-bold text-primary hover:underline">Create an account</a>
+          {{ t('newHere') }} 
+          <a href="#" class="font-bold text-primary hover:underline">{{ t('createAnAccount') }}</a>
         </p>
       </div>
     </div>
