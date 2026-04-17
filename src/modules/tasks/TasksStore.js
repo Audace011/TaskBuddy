@@ -1,75 +1,61 @@
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
-
-// Simple helper for "encryption" (Base64 + salt) for demonstration as per plan
-const ENCRYPTION_KEY = 'task-buddy-secure-key'
-const encrypt = (data) => btoa(JSON.stringify(data) + ENCRYPTION_KEY)
-const decrypt = (cipher) => {
-    try {
-        const decoded = atob(cipher)
-        return JSON.parse(decoded.replace(ENCRYPTION_KEY, ''))
-    } catch {
-        return null
-    }
-}
+import api from '../../api/axios'
+import { useAuthStore } from '../auth/AuthStore'
 
 export const useTasksStore = defineStore('tasks', () => {
-    const savedTasks = localStorage.getItem('task-buddy-tasks')
-    const initialTasks = savedTasks ? decrypt(savedTasks) : [
-        {
-            id: 1,
-            title: 'Design the landing page wireframe',
-            description: 'Create high-fidelity wireframes for the new marketing landing page using Figma.',
-            priority: 'high',
-            dueDate: '2026-02-18',
-            status: 'done',
-        },
-        {
-            id: 2,
-            title: 'Set up CI/CD pipeline',
-            description: 'Configure GitHub Actions for automated testing and deployment to staging.',
-            priority: 'high',
-            dueDate: '2026-02-17',
-            status: 'inprogress',
-        },
-        {
-            id: 3,
-            title: 'Write unit tests for auth module',
-            description: 'Cover login, logout, and token refresh flows with at least 90% coverage.',
-            priority: 'medium',
-            dueDate: '2026-02-22',
-            status: 'todo',
+    const tasks = ref([])
+    const authStore = useAuthStore()
+
+    async function fetchTasks() {
+        if (!authStore.user?.email) return
+        try {
+            const response = await api.get(`/tasks?email=${authStore.user.email}`)
+            tasks.value = response.data
+        } catch (error) {
+            console.error('Failed to fetch tasks:', error)
         }
-    ]
+    }
 
-    const tasks = ref(initialTasks || [])
-
-    // Persist and Encrypt whenever tasks change
-    watch(tasks, (newTasks) => {
-        localStorage.setItem('task-buddy-tasks', encrypt(newTasks))
-    }, { deep: true })
-
-    function updateStatus(id, newStatus) {
+    async function updateStatus(id, newStatus) {
         const task = tasks.value.find((t) => t.id === id)
-        if (task) {
+        if (!task) return
+        
+        try {
+            const updatedTask = { ...task, status: newStatus }
+            await api.put(`/tasks/${id}`, updatedTask)
             task.status = newStatus
+        } catch (error) {
+            console.error('Failed to update task status:', error)
         }
     }
 
-    function addTask(task) {
-        tasks.value.push({
-            id: Date.now(),
-            title: task.title,
-            description: task.description,
-            priority: task.priority,
-            dueDate: task.dueDate,
-            status: 'todo',
-        })
+    async function addTask(taskData) {
+        if (!authStore.user?.email) return
+        try {
+            const newTask = {
+                title: taskData.title,
+                description: taskData.description,
+                priority: taskData.priority,
+                dueDate: taskData.dueDate,
+                status: 'todo',
+                userEmail: authStore.user.email
+            }
+            const response = await api.post('/tasks', newTask)
+            tasks.value.push(response.data)
+        } catch (error) {
+            console.error('Failed to add task:', error)
+        }
     }
 
-    function deleteTask(id) {
-        tasks.value = tasks.value.filter((t) => t.id !== id)
+    async function deleteTask(id) {
+        try {
+            await api.delete(`/tasks/${id}`)
+            tasks.value = tasks.value.filter((t) => t.id !== id)
+        } catch (error) {
+            console.error('Failed to delete task:', error)
+        }
     }
 
-    return { tasks, updateStatus, addTask, deleteTask }
+    return { tasks, fetchTasks, updateStatus, addTask, deleteTask }
 })

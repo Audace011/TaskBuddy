@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import api from '../../api/axios'
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref(null)
@@ -7,11 +8,27 @@ export const useAuthStore = defineStore('auth', () => {
 
     const isLoggedIn = computed(() => !!user.value)
 
-    function login(email, password, name) {
-        // Mock login — in a real app this would call an API
-        user.value = { email, name: name || email.split('@')[0] }
-        isAuthenticated.value = true
-        localStorage.setItem('tb-user', JSON.stringify(user.value))
+    async function register(email, password, name) {
+        try {
+            await api.post('/auth/register', { email, password, name })
+            // Automatically log them in after successful registration
+            await login(email, password)
+        } catch (error) {
+            console.error('Registration error:', error)
+            throw error
+        }
+    }
+
+    async function login(email, password) {
+        try {
+            const response = await api.post('/auth/login', { email, password })
+            user.value = response.data
+            isAuthenticated.value = true
+            localStorage.setItem('tb-user', JSON.stringify(user.value))
+        } catch (error) {
+            console.error('Authentication error:', error)
+            throw error
+        }
     }
 
     function logout() {
@@ -27,5 +44,5 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated.value = true
     }
 
-    return { user, isAuthenticated, isLoggedIn, login, logout }
+    return { user, isAuthenticated, isLoggedIn, login, register, logout }
 })

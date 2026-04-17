@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTasksStore } from '../tasks/TasksStore'
 import { useAuthStore } from '../auth/AuthStore'
@@ -16,6 +16,12 @@ const route = useRoute()
 
 const showModal = ref(false)
 const searchQuery = ref('')
+
+onMounted(() => {
+  if (authStore.isLoggedIn) {
+    tasksStore.fetchTasks()
+  }
+})
 
 // ─── Stats ───────────────────────────────────────────
 const today = new Date().toISOString().slice(0, 10)
